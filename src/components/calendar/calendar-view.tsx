@@ -113,6 +113,24 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
 
   const totalHours = assignments.reduce((acc, assignment) => acc + assignment.shiftType.hours, 0);
 
+  const getShiftColorClasses = (shiftName: string) => {
+    console.log(shiftName);
+    switch (shiftName) {
+      case 'Mañana':
+        return 'bg-primary/10 text-primary hover:bg-primary/20';
+      case 'Tarde':
+        return 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-200 hover:bg-emerald-500/10';
+      case 'Día':
+        return 'bg-amber-500/10 text-amber-800 dark:text-amber-200 hover:bg-amber-500/10';
+      case 'Noche':
+        return 'bg-fuchsia-500/10 text-fuchsia-800 dark:text-fuchsia-200 hover:bg-fuchsia-500/10';
+      case '24h':
+        return 'bg-red-500/10 text-red-800 dark:text-red-200 hover:bg-red-500/10';
+      default:
+        return 'bg-violet-500/10 text-violet-800 dark:text-violet-200 hover:bg-violet-500/10';
+    }
+  };
+
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
       <div className="flex items-center justify-between p-4">
@@ -160,7 +178,10 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
               <Popover open={openPopoverId === day.toString()} onOpenChange={(isOpen) => setOpenPopoverId(isOpen ? day.toString() : null)}>
                 <PopoverTrigger asChild>
                   {assignment ? (
-                     <div className="mt-1 flex-1 cursor-pointer rounded-md bg-primary/10 p-1 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors flex items-center justify-center text-center">
+                     <div className={cn(
+                        "mt-1 flex-1 cursor-pointer rounded-md p-1 text-xs font-semibold transition-colors flex items-center justify-center text-center",
+                        getShiftColorClasses(assignment.shiftType.name)
+                      )}>
                         {assignment.shiftType.name} ({assignment.shiftType.hours}h)
                     </div>
                   ) : (
