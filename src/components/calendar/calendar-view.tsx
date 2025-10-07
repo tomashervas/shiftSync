@@ -14,6 +14,7 @@ import {
   subMonths,
   isToday,
 } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,7 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
   const [currentDate, setCurrentDate] = React.useState(new Date());
   const [assignments, setAssignments] = React.useState(initialAssignments);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [openPopoverId, setOpenPopoverId] = React.useState<string | null>(null);
   
   const { toast } = useToast();
   const router = useRouter();
@@ -56,17 +58,17 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
       adjustedDate.setHours(12); // Establecer hora en medio día para evitar problemas de zona horaria
       
       // Guardar en el servidor primero
-      const result = await assignShift({ 
-        date: adjustedDate.toISOString().split('T')[0], 
-        shiftTypeId, 
-        userId 
+      const result = await assignShift({
+        date: adjustedDate.toISOString().split('T')[0],
+        shiftTypeId,
+        userId
       });
       
       if (result?.error) {
-        toast({ 
-          title: 'Error', 
-          description: result.error, 
-          variant: 'destructive' 
+        toast({
+          title: 'Error',
+          description: result.error,
+          variant: 'destructive'
         });
         return;
       }
@@ -90,13 +92,14 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
 
     } catch (error) {
       console.error('Error:', error);
-      toast({ 
-        title: 'Error', 
-        description: 'Hubo un error al asignar el turno', 
-        variant: 'destructive' 
+      toast({
+        title: 'Error',
+        description: 'Hubo un error al asignar el turno',
+        variant: 'destructive'
       });
     } finally {
       setIsLoading(false);
+      setOpenPopoverId(null);
     }
   };
 
@@ -108,30 +111,31 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
     fetchAssignments();
   }, [currentDate, userId]);
 
+  const totalHours = assignments.reduce((acc, assignment) => acc + assignment.shiftType.hours, 0);
+
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
       <div className="flex items-center justify-between p-4">
-        <h2 className="font-headline text-2xl">{format(currentDate, 'MMMM yyyy')}</h2>
+        <h2 className="font-headline text-2xl">{format(currentDate, 'MMMM yyyy', { locale: es })} <span className="text-lg font-semibold text-muted-foreground">({totalHours} horas)</span></h2>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => setCurrentDate(subMonths(currentDate, 1))}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button variant="outline" onClick={() => setCurrentDate(new Date())}>
-            Today
+            Hoy
           </Button>
           <Button variant="outline" size="icon" onClick={() => setCurrentDate(addMonths(currentDate, 1))}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-7 border-t">
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-          <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground border-r last:border-r-0">
-            {day}
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7">
+              <div className="grid grid-cols-7 border-t">
+              {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((day) => (
+                <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground border-r last:border-r-0">
+                  {day}
+                </div>
+              ))}
+            </div>      <div className="grid grid-cols-7">
         {Array.from({ length: paddingDays }).map((_, i) => (
           <div key={`pad-${i}`} className="border-b border-r" />
         ))}
@@ -153,7 +157,7 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
                 {format(day, 'd')}
               </time>
               
-              <Popover>
+              <Popover open={openPopoverId === day.toString()} onOpenChange={(isOpen) => setOpenPopoverId(isOpen ? day.toString() : null)}>
                 <PopoverTrigger asChild>
                   {assignment ? (
                      <div className="mt-1 flex-1 cursor-pointer rounded-md bg-primary/10 p-1 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors flex items-center justify-center text-center">
@@ -186,7 +190,7 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
                                 <hr className="my-1"/>
                                 <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleAssignShift(day, null)}>
                                     <X className="mr-2 h-4 w-4"/>
-                                    Clear Shift
+                                    Quitar Turno
                                 </Button>
                             </>
                         )}

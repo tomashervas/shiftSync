@@ -61,11 +61,9 @@ async function Dashboard() {
     getMonthAssignments(new Date(), session.user.id)
   ]);
   
-  const totalHours = initialAssignments.reduce((acc, assignment) => acc + assignment.shiftType.hours, 0);
-
   return (
     <div className="flex min-h-screen flex-col bg-secondary/50 dark:bg-background">
-      <Header user={user} totalHours={totalHours} />
+      <Header user={user} />
       <main className="flex-1 p-4 md:p-6 lg:p-8">
         <CalendarView
           userId={user!.id}
