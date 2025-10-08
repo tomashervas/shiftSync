@@ -126,6 +126,8 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
         return 'bg-fuchsia-500/10 text-fuchsia-800 dark:text-fuchsia-200 hover:bg-fuchsia-500/10';
       case '24h':
         return 'bg-red-500/10 text-red-800 dark:text-red-200 hover:bg-red-500/10';
+      case 'Libre':
+        return 'bg-gray-500/10 dark:bg-gray-200/50 text-gray-800 dark:text-gray-200 hover:bg-gray-500/10';
       default:
         return 'bg-violet-500/10 text-violet-800 dark:text-violet-200 hover:bg-violet-500/10';
     }
@@ -134,7 +136,9 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
       <div className="flex items-center justify-between p-4">
-        <h2 className="font-headline text-2xl">{format(currentDate, 'MMMM yyyy', { locale: es })} <span className="text-lg font-semibold text-muted-foreground">({totalHours} horas)</span></h2>
+        <h2 className="font-headline text-2xl">{format(currentDate, 'MMMM yyyy', { locale: es })} 
+          { totalHours > 0 && <span className="text-lg font-semibold text-muted-foreground ml-4">({totalHours} horas)</span> }
+        </h2>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => setCurrentDate(subMonths(currentDate, 1))}>
             <ChevronLeft className="h-4 w-4" />
@@ -182,7 +186,7 @@ export function CalendarView({ userId, shiftTypes, initialAssignments }: Calenda
                         "mt-1 flex-1 cursor-pointer rounded-md p-1 text-xs font-semibold transition-colors flex items-center justify-center text-center",
                         getShiftColorClasses(assignment.shiftType.name)
                       )}>
-                        {assignment.shiftType.name} ({assignment.shiftType.hours}h)
+                        {assignment.shiftType.name} {assignment.shiftType.hours > 0 ? '(' + assignment.shiftType.hours + 'h)': ''}
                     </div>
                   ) : (
                     <div className="mt-1 flex-1 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">

@@ -21,10 +21,10 @@ function LandingPage() {
         <section className="container mx-auto grid grid-cols-1 items-center gap-12 px-4 py-16 md:grid-cols-2 lg:py-24">
           <div className="space-y-6">
             <h2 className="font-headline text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              Organize Your Nursing Shifts, Effortlessly.
+              Organiza tu horario de trabajo con ShiftSync.
             </h2>
             <p className="text-lg text-muted-foreground">
-              ShiftSync is a modern, intuitive tool designed for nurses to manage their work schedule with ease. Track hours, plan your month, and focus on what truly matters.
+              ShiftSync es una herramienta moderna e intuitiva diseñada para que gestiones tu horario de trabajo con facilidad. Registra las horas, planifica tu mes y céntrate en lo que de verdad importa.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row">
               <SignIn />

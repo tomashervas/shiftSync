@@ -28,6 +28,7 @@ const defaultShifts = [
   { name: 'Día', hours: 12 },
   { name: 'Noche', hours: 12 },
   { name: '24h', hours: 24 },
+  { name: 'Libre', hours: 0 }
 ];
 
 export function ShiftSetupForm({ initialShifts }: { initialShifts?: { name: string, hours: number }[] }) {
