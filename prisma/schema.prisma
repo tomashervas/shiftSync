@@ -25,23 +25,27 @@ model User {
 }
 
 model ShiftType {
-  id          String    @id @default(cuid())
-  name        String
-  hours       Int
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-  assignments ShiftAssignment[]
+  id                       String              @id @default(cuid())
+  name                     String
+  hours                    Int
+  user                     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                   String
+  assignments              ShiftAssignment[]
+  originalShiftAssignments ShiftAssignment[]   @relation("OriginalShift")
 
   @@unique([userId, name])
 }
 
 model ShiftAssignment {
-  id           String    @id @default(cuid())
-  date         DateTime  @db.Date
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
-  shiftType    ShiftType @relation(fields: [shiftTypeId], references: [id], onDelete: Cascade)
-  shiftTypeId  String
+  id                  String     @id @default(cuid())
+  date                DateTime   @db.Date
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String
+  shiftType           ShiftType  @relation(fields: [shiftTypeId], references: [id], onDelete: Cascade)
+  shiftTypeId         String
+  originalShiftType   ShiftType? @relation("OriginalShift", fields: [originalShiftTypeId], references: [id], onDelete: SetNull)
+  originalShiftTypeId String?
+  observations        String?
 
   @@unique([userId, date])
 }

@@ -21,7 +21,7 @@ export function SignIn({ ...props }) {
         await signIn('google');
       }}
     >
-      <Button type='submit' {...props}>
+      <Button variant={'secondary'}  type='submit' {...props}>
         <GoogleIcon />
         Sign in with Google
       </Button>

@@ -74,6 +74,8 @@ const assignShiftSchema = z.object({
   date: z.string().date(),
   shiftTypeId: z.string().cuid().nullable(),
   userId: z.string().cuid(),
+  isChange: z.boolean().optional(),
+  observations: z.string().optional(),
 });
 
 export async function assignShift(data: z.infer<typeof assignShiftSchema>) {
@@ -88,7 +90,7 @@ export async function assignShift(data: z.infer<typeof assignShiftSchema>) {
       return { error: 'Invalid data' };
     }
 
-    const { date, shiftTypeId, userId } = validatedData.data;
+    const { date, shiftTypeId, userId, isChange, observations } = validatedData.data;
 
     let result;
     
@@ -102,9 +104,31 @@ export async function assignShift(data: z.infer<typeof assignShiftSchema>) {
         },
         include: {
           shiftType: true,
+          originalShiftType: true,
         },
       }).catch(() => null);
     } else {
+      const existingAssignment = await prisma.shiftAssignment.findUnique({
+        where: {
+          userId_date: {
+            userId,
+            date: new Date(date),
+          },
+        },
+      });
+
+      let originalShiftTypeId = existingAssignment?.originalShiftTypeId;
+
+      if (isChange && existingAssignment && existingAssignment.shiftTypeId !== shiftTypeId) {
+        if (!originalShiftTypeId) {
+          originalShiftTypeId = existingAssignment.shiftTypeId;
+        }
+      } 
+
+      if (shiftTypeId === originalShiftTypeId) {
+        originalShiftTypeId = null;
+      }
+
       result = await prisma.shiftAssignment.upsert({
         where: {
           userId_date: {
@@ -112,14 +136,21 @@ export async function assignShift(data: z.infer<typeof assignShiftSchema>) {
             date: new Date(date),
           },
         },
-        update: { shiftTypeId },
+        update: { 
+          shiftTypeId, 
+          observations,
+          originalShiftTypeId
+        },
         create: {
           userId,
           date: new Date(date),
           shiftTypeId,
+          observations,
+          originalShiftTypeId
         },
         include: {
           shiftType: true,
+          originalShiftType: true,
         },
       });
     }
@@ -148,6 +179,7 @@ export async function getMonthAssignments(date: Date, userId: string) {
         },
         include: {
             shiftType: true,
+            originalShiftType: true,
         },
     });
     

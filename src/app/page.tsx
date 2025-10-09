@@ -18,7 +18,7 @@ function LandingPage() {
         <h1 className="font-headline text-2xl font-bold text-primary">ShiftSync</h1>
       </header>
       <main className="flex-1">
-        <section className="container mx-auto grid grid-cols-1 items-center gap-12 px-4 py-16 md:grid-cols-2 lg:py-24">
+        <section className="container mx-auto grid grid-cols-1 items-center gap-12 p-4 md:grid-cols-2">
           <div className="space-y-6">
             <h2 className="font-headline text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
               Organiza tu horario de trabajo con ShiftSync.
